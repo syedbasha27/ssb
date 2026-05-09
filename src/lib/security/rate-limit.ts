@@ -61,7 +61,7 @@ export async function consumeRateLimit(key: string, limit: number, windowMs: num
   // Fallback is intended for local/dev only. In production use Upstash Redis
   // so limits are shared across all serverless instances.
   if (process.env.NODE_ENV === "production" && !hasWarnedFallback) {
-    console.warn("Rate limit fallback is in-memory. Configure UPSTASH_REDIS_REST_URL/TOKEN for distributed limits.");
+    console.error("Rate limit fallback is in-memory. Configure UPSTASH_REDIS_REST_URL/TOKEN for distributed limits.");
     hasWarnedFallback = true;
   }
 

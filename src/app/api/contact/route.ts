@@ -14,7 +14,10 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createClient();
   const { error } = await supabase.from("contact_inquiries").insert(parsed.data);
-  if (error) return NextResponse.redirect(new URL("/contact?submitted=0", request.url));
+  if (error) {
+    console.error("Contact inquiry insert failed", error);
+    return NextResponse.redirect(new URL("/contact?submitted=0", request.url));
+  }
 
   return NextResponse.redirect(new URL("/contact?submitted=1", request.url));
 }

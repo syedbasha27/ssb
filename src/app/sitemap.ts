@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { books } from "@/lib/site-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://ssb-publications.vercel.app";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://ssb-publications.vercel.app";
   const routes = [
     "",
     "/books",

@@ -1,5 +1,6 @@
 export const siteConfig = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+  cartStorageKey: "ssb_cart",
 };
 
 export function getWhatsAppLink() {

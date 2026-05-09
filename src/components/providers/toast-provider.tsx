@@ -5,7 +5,11 @@ import { createContext, useContext, useMemo, useState } from "react";
 type Toast = { id: number; message: string };
 type ToastContextType = { pushToast: (message: string) => void };
 
-const ToastContext = createContext<ToastContextType>({ pushToast: () => undefined });
+const ToastContext = createContext<ToastContextType>({
+  pushToast: () => {
+    throw new Error("useToast must be used inside ToastProvider");
+  },
+});
 
 export function useToast() {
   return useContext(ToastContext);

@@ -2,6 +2,7 @@
 
 import { Book } from "@/types";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { siteConfig } from "@/lib/config";
 
 type CartItem = { book: Book; qty: number };
 
@@ -21,7 +22,7 @@ const CartContext = createContext<CartContextType>({
   total: 0,
 });
 
-const CART_KEY = "ssb_cart";
+const CART_KEY = siteConfig.cartStorageKey;
 
 export function useCart() {
   return useContext(CartContext);

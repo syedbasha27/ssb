@@ -18,11 +18,17 @@ export async function POST(request: NextRequest) {
     .select("id")
     .eq("email", parsed.data.email)
     .maybeSingle();
-  if (existing.error) return NextResponse.redirect(new URL("/?subscribed=0", request.url));
+  if (existing.error) {
+    console.error("Newsletter lookup failed", existing.error);
+    return NextResponse.redirect(new URL("/?subscribed=0", request.url));
+  }
   if (existing.data) return NextResponse.redirect(new URL("/?subscribed=exists", request.url));
 
   const { error } = await supabase.from("newsletter_subscribers").insert({ email: parsed.data.email });
-  if (error) return NextResponse.redirect(new URL("/?subscribed=0", request.url));
+  if (error) {
+    console.error("Newsletter insert failed", error);
+    return NextResponse.redirect(new URL("/?subscribed=0", request.url));
+  }
 
   return NextResponse.redirect(new URL("/?subscribed=1", request.url));
 }
