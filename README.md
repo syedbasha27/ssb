@@ -50,6 +50,7 @@ Required keys:
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
 - `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_WHATSAPP_NUMBER` (for WhatsApp floating/contact links)
 - `UPSTASH_REDIS_REST_URL` (optional, recommended for distributed rate limiting)
 - `UPSTASH_REDIS_REST_TOKEN` (optional, recommended for distributed rate limiting)
 

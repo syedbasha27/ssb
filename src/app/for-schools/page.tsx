@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { getWhatsAppLink } from "@/lib/config";
 
 export default function ForSchoolsPage() {
+  const whatsappLink = getWhatsAppLink();
+
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6">
       <h1 className="text-4xl font-extrabold text-brand-blue">For Schools</h1>
@@ -45,14 +48,18 @@ export default function ForSchoolsPage() {
         <div className="rounded-2xl bg-brand-blue p-6 text-white">
           <h3 className="text-2xl font-bold">Need immediate support?</h3>
           <p className="mt-3 text-blue-100">Chat with our school partnerships desk on WhatsApp for quick sample and pricing help.</p>
-          <a
-            href="https://wa.me/919999999999"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-blue"
-          >
-            WhatsApp Inquiry
-          </a>
+          {whatsappLink ? (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-blue"
+            >
+              WhatsApp Inquiry
+            </a>
+          ) : (
+            <p className="mt-5 text-sm text-blue-100">Set NEXT_PUBLIC_WHATSAPP_NUMBER to enable WhatsApp inquiry link.</p>
+          )}
         </div>
       </section>
     </main>

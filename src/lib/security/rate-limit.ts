@@ -1,4 +1,5 @@
 const buckets = new Map<string, { count: number; expiresAt: number }>();
+let hasWarnedFallback = false;
 
 async function consumeWithUpstash(key: string, limit: number, windowMs: number) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -35,6 +36,13 @@ async function consumeWithUpstash(key: string, limit: number, windowMs: number) 
 export async function consumeRateLimit(key: string, limit: number, windowMs: number) {
   const distributedResult = await consumeWithUpstash(key, limit, windowMs);
   if (distributedResult) return distributedResult;
+
+  // Fallback is intended for local/dev only. In production use Upstash Redis
+  // so limits are shared across all serverless instances.
+  if (process.env.NODE_ENV === "production" && !hasWarnedFallback) {
+    console.warn("Rate limit fallback is in-memory. Configure UPSTASH_REDIS_REST_URL/TOKEN for distributed limits.");
+    hasWarnedFallback = true;
+  }
 
   const now = Date.now();
   const current = buckets.get(key);
