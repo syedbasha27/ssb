@@ -50,6 +50,8 @@ Required keys:
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
 - `NEXT_PUBLIC_SITE_URL`
+- `UPSTASH_REDIS_REST_URL` (optional, recommended for distributed rate limiting)
+- `UPSTASH_REDIS_REST_TOKEN` (optional, recommended for distributed rate limiting)
 
 ## Supabase Setup
 
@@ -129,4 +131,3 @@ supabase/
 npm run lint
 npm run build
 ```
-

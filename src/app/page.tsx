@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { FadeIn } from "@/components/motion/fade-in";
 import { books, resources, testimonials } from "@/lib/site-data";
 import { BookCard } from "@/components/books/book-card";
@@ -140,8 +141,10 @@ export default function Home() {
         </div>
       </section>
 
-      <script
+      <Script
+        id="organization-schema"
         type="application/ld+json"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
