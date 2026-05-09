@@ -1,6 +1,16 @@
 const buckets = new Map<string, { count: number; expiresAt: number }>();
 let hasWarnedFallback = false;
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 2000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function consumeWithUpstash(key: string, limit: number, windowMs: number) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -10,20 +20,31 @@ async function consumeWithUpstash(key: string, limit: number, windowMs: number) 
   const windowKey = `ratelimit:${key}:${Math.floor(now / windowMs)}`;
   const headers = { Authorization: `Bearer ${token}` };
 
-  const incrementRes = await fetch(`${url}/incr/${encodeURIComponent(windowKey)}`, {
-    method: "POST",
-    headers,
-  });
+  let incrementRes: Response;
+  try {
+    incrementRes = await fetchWithTimeout(
+      `${url}/incr/${encodeURIComponent(windowKey)}`,
+      { method: "POST", headers },
+      2000,
+    );
+  } catch {
+    return null;
+  }
   if (!incrementRes.ok) return null;
 
   const incrementPayload = (await incrementRes.json()) as { result: number };
   const count = Number(incrementPayload.result);
 
   if (count === 1) {
-    await fetch(`${url}/expire/${encodeURIComponent(windowKey)}/${Math.ceil(windowMs / 1000)}`, {
-      method: "POST",
-      headers,
-    });
+    try {
+      await fetchWithTimeout(
+        `${url}/expire/${encodeURIComponent(windowKey)}/${Math.ceil(windowMs / 1000)}`,
+        { method: "POST", headers },
+        2000,
+      );
+    } catch {
+      return null;
+    }
   }
 
   const retryAfterMs = windowMs - (now % windowMs);

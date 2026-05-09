@@ -2,7 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRazorpayClient } from "@/lib/razorpay";
 
-const schema = z.object({ amount: z.number().min(1) });
+const schema = z.object({
+  amount: z.number().min(1),
+  paymentMode: z.enum(["razorpay", "cod"]),
+  customer: z.object({
+    name: z.string().min(2),
+    phone: z.string().min(8),
+    email: z.string().email(),
+    address: z.string().min(10),
+    pincode: z.string().min(4),
+    couponCode: z.string().optional(),
+  }),
+});
 
 export async function POST(request: NextRequest) {
   try {

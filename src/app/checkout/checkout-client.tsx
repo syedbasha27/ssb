@@ -12,9 +12,21 @@ export function CheckoutClient() {
   const { items, total, removeFromCart, clearCart } = useCart();
   const { pushToast } = useToast();
   const [paymentMode, setPaymentMode] = useState<"razorpay" | "cod">("razorpay");
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    pincode: "",
+    couponCode: "",
+  });
 
   async function handleCheckout() {
     if (!items.length) return;
+    if (!customer.name || !customer.phone || !customer.email || !customer.address || !customer.pincode) {
+      pushToast("Please complete all required shipping details.");
+      return;
+    }
 
     if (paymentMode === "cod") {
       pushToast("COD order placed successfully.");
@@ -25,7 +37,7 @@ export function CheckoutClient() {
     const response = await fetch("/api/razorpay/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: total }),
+      body: JSON.stringify({ amount: total, customer, paymentMode }),
     });
 
     if (!response.ok) {
@@ -41,12 +53,40 @@ export function CheckoutClient() {
       <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
         <h2 className="text-xl font-bold text-slate-900">Delivery Details</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input placeholder="Parent/School Name" />
-          <Input placeholder="Phone" />
-          <Input placeholder="Email" type="email" className="sm:col-span-2" />
-          <Textarea placeholder="Full shipping address" className="sm:col-span-2" rows={4} />
-          <Input placeholder="Pincode" />
-          <Input placeholder="Coupon code" />
+          <Input
+            placeholder="Parent/School Name"
+            value={customer.name}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, name: event.target.value }))}
+          />
+          <Input
+            placeholder="Phone"
+            value={customer.phone}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, phone: event.target.value }))}
+          />
+          <Input
+            placeholder="Email"
+            type="email"
+            className="sm:col-span-2"
+            value={customer.email}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, email: event.target.value }))}
+          />
+          <Textarea
+            placeholder="Full shipping address"
+            className="sm:col-span-2"
+            rows={4}
+            value={customer.address}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, address: event.target.value }))}
+          />
+          <Input
+            placeholder="Pincode"
+            value={customer.pincode}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, pincode: event.target.value }))}
+          />
+          <Input
+            placeholder="Coupon code"
+            value={customer.couponCode}
+            onChange={(event) => setCustomer((prev) => ({ ...prev, couponCode: event.target.value }))}
+          />
         </div>
         <div>
           <p className="text-sm font-semibold text-slate-700">Payment Method</p>

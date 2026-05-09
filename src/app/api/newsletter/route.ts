@@ -13,9 +13,15 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid email" }, { status: 400 });
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const existing = await supabase
     .from("newsletter_subscribers")
-    .upsert({ email: parsed.data.email }, { onConflict: "email", ignoreDuplicates: true });
+    .select("id")
+    .eq("email", parsed.data.email)
+    .maybeSingle();
+  if (existing.error) return NextResponse.redirect(new URL("/?subscribed=0", request.url));
+  if (existing.data) return NextResponse.redirect(new URL("/?subscribed=exists", request.url));
+
+  const { error } = await supabase.from("newsletter_subscribers").insert({ email: parsed.data.email });
   if (error) return NextResponse.redirect(new URL("/?subscribed=0", request.url));
 
   return NextResponse.redirect(new URL("/?subscribed=1", request.url));
